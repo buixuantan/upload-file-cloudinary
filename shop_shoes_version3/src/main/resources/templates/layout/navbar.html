@@ -1,0 +1,49 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<th:block th:fragment="navbar">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">HEROKU</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown"
+                    aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNavDropdown">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="#">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Order</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button"
+                           data-bs-toggle="dropdown" aria-expanded="false">
+                            Manager about list of brands
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                            <li><a class="dropdown-item" href="https://www.converse.com/country-language-selector" target="_blank">Converse</a></li>
+                            <li><a class="dropdown-item" href="https://www.vans.com/en-us?_sr=1" target="_blank">Vans</a></li>
+                            <li><a class="dropdown-item" href="#" target="_blank">Balenciaga</a></li>
+                            <li><a class="dropdown-item" href="#" target="_blank">New balance</a></li>
+                            <li><a class="dropdown-item" href="#" target="_blank">Reebok</a></li>
+                            <li><a class="dropdown-item" href="https://us.puma.com/us/en" target="_blank">Puma</a></li>
+                            <li><a class="dropdown-item" href="https://www.adidas.com.vn/vi" target="_blank">Adidas</a></li>
+                            <li><a class="dropdown-item" href="https://www.nike.com/vn/" target="_blank">Nike</a></li>
+                        </ul>
+                    </li>
+                </ul>
+                <button class="btn btn-outline-light me-2 btn-createProduct" type="button">
+                    <i class="fa-solid fa-plus"></i>
+                    <span>Add A New Shoes</span>
+                </button>
+                <form class="d-flex">
+                    <input class="form-control me-2" type="search" name="search" placeholder="Search" aria-label="Search">
+                    <button class="btn btn-outline-danger "  id="btnSearch" type="submit">Search</button>
+                </form>
+            </div>
+        </div>
+
+    </nav>
+
+
+</th:block>

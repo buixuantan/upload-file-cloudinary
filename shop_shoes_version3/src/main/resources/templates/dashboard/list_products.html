@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:insert="/layout/header :: header"/>
+    <link rel="stylesheet" href="/assets/css/style.css">
+    <title>Home Page</title>
+</head>
+<body>
+<div id="main">
+    <div id="head">
+        <th:block th:insert="/layout/navbar :: navbar"/>
+    </div>
+    <div id="head-link">
+    </div>
+    <div id="left">
+    </div>
+    <div id="content">
+        <table class="table table-hover">
+            <thead>
+            <tr class="table-dark">
+                <th scope="col">#</th>
+                <th scope="col">Name</th>
+                <th scope="col">Title</th>
+                <th scope="col">Material</th>
+                <th scope="col">Price</th>
+                <th scope="col">Quantity</th>
+                <th scope="col">Category</th>
+                <th scope="col">Size</th>
+                <th scope="col">Color</th>
+                <th scope="col">Description</th>
+                <th scope="col">Image</th>
+                <th scope="col" colspan="3">Action</th>
+            </tr>
+            </thead>
+            <tbody id="tbProduct">
+            </tbody>
+        </table>
+    </div>
+    <div id="right">
+    </div>
+    <div id="footer">
+    </div>
+
+</div>
+
+<th:block th:insert="/layout/script :: script"/>
+
+<th:block th:insert="/dashboard/modalCreate :: modal-create"/>
+
+<th:block th:insert="/dashboard/modalUpdate :: modal-update"/>
+
+<th:block th:insert="/dashboard/temp_option :: temp-option"/>
+
+<th:block th:insert="/dashboard/list_table :: temp-products"/>
+
+<script src="/assets/js/app.js"></script>
+
+<script>
+
+    let page = {
+        urls: {
+            getAllProducts: App.BASE_URL_PRODUCT,
+            getAllCategories: App.BASE_URL_CATEGORY,
+            getAllColors: App.BASE_URL_COLOR,
+            getAllSizes: App.BASE_URL_SIZE,
+
+            doSave: App.BASE_URL_PRODUCT,
+            doUpdate: App.BASE_URL_PRODUCT
+        }
+    }
+
+    let product = new Product();
+
+    let category = new Category();
+
+    let color = new ColorJS();
+
+    let size = new Size();
+
+    let tempProduct = $.validator.format($.trim($("#tempProduct").val()));
+
+    let tempOption = $.validator.format($.trim($("#tempOption").val()));
+
+    let tampId = 0;
+
+    let addRow = () => {
+        let image_thumbnail = App.BASE_URL_CLOUD_IMAGE + "/" + App.BASE_SCALE_IMAGE + "/" + product.fileFolder + "/" + product.fileName;
+        let imageFileUrl = App.BASE_URL_CLOUD_IMAGE + "/" + product.fileFolder + "/" + product.fileName;
+        let aClass = "image-popup-vertical-fit";
+
+        $("#tbProduct").prepend($(tempProduct(product.id, product.name, product.title, product.material,
+            product.price, product.quantity, product.nameCategory, product.size, product.color, product.description,
+            imageFileUrl, image_thumbnail, aClass)));
+    }
+
+    let addRowOption = (element, id, name) => {
+        $(element).append($(tempOption(id, name)));
+    }
+
+    function loadProduct() {
+        return $.ajax({
+            type: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            },
+            url: page.urls.getAllProducts
+        })
+            .done(function (data) {
+                console.log(data)
+                data.forEach(item => {
+                    product = item;
+                    addRow();
+                })
+            })
+            .fail(function (jqXHR) {
+                App.SweetAlert.showErrorAlert("Empty list product")
+                handleGroupModal();
+            })
+    }
+
+
+    function drawListCategory() {
+        $.ajax({
+            url: page.urls.getAllCategories,
+            success: function (categories) {
+                $("#categoryId").empty();
+
+                categories.forEach(item => {
+                    addRowOption("#categoryId", item.id, item.title);
+                });
+            },
+            error: function () {
+
+            }
+        })
+    }
+
+    function drawListColors() {
+        $.ajax({
+            url: page.urls.getAllColors,
+            success: function (colors) {
+                $("#colorId").empty();
+
+                colors.forEach(item => {
+                    addRowOption("#colorId", item.id, item.color);
+                });
+            },
+            error: function () {
+
+            }
+        })
+    }
+
+    function drawListSizes() {
+        $.ajax({
+            url: page.urls.getAllSizes,
+            success: function (sizes) {
+                $("#sizeId").empty();
+
+                sizes.forEach(item => {
+                    addRowOption("#sizeId", item.id, item.size);
+                });
+            },
+            error: function () {
+
+            }
+        })
+    }
+
+    function findById(id) {
+        return $.ajax({
+            type: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            },
+            url: page.urls.getAllProducts + "/" + id
+        }).done((data) => {
+            product = data;
+        }).fail((jqXHR) => {
+            App.SweetAlert.showErrorAlert(jqXHR.responseText)
+        })
+
+    }
+
+    function handleCreateForm() {
+        let btnCreate = $(".btn-createProduct");
+
+        btnCreate.on("click", function () {
+            drawListCategory();
+            drawListColors();
+            drawListSizes();
+            $("#createModal").modal("show");
+        })
+    }
+
+    function handleUpdateForm() {
+        let btnUpdate = $(".btn-updateProduct");
+
+        btnUpdate.on("click", function () {
+
+            let id = $(this).data("id");
+
+            tampId = id;
+
+            findById(id).then(() => {
+
+                $("#nameUp").val(product.name);
+                $('#titleUp').val(product.title);
+                $('#materialUp').val(product.material)
+                $("#priceUp").val(product.price);
+                $('#quantityUp').val(product.quantity);
+                $("#descriptionUp").val(product.description);
+
+                $("#updateModal").modal("show");
+            })
+        })
+    }
+
+    function handlerShowConfirmSuspend() {
+
+        $(".btn-delete").on("click", function () {
+            App.SweetAlert.ShowConfirmSuspend().then(result => {
+                if (result.isConfirmed) {
+                    let id = $(this).data('id');
+
+                    findById(id).then(function () {
+
+                        doSuspension(id).then(function () {
+                            App.SweetAlert.showSuccessAlert('Suspended successfully');
+
+                            $("#tr_" + id).remove();
+
+                            handleGroupModal();
+                        })
+                    })
+                }
+            })
+        })
+    }
+
+    function handleGroupModal() {
+        handleCreateForm();
+        handleUpdateForm();
+        handlerShowConfirmSuspend();
+    }
+
+    function doCreate() {
+
+        let formData = new FormData();
+        formData.append("name", $("#name").val().toString());
+        formData.append("title", $("#title").val().toString());
+        formData.append("price", $("#price").val().toString());
+        formData.append("quantity", $("#quantity").val().toString());
+        formData.append("material", $("#material").val().toString());
+        formData.append("categoryId", $("#categoryId").val().toString());
+        formData.append("colorId", $("#colorId").val().toString());
+        formData.append("sizeId", $("#sizeId").val().toString());
+        // formData.append("bestseller", $("#bestseller").val().toString());
+        // formData.append("hot", $("#hot").val().toString());
+        // formData.append("status", $("#status").val().toString());
+        formData.append("description", $("#description").val().toString());
+        formData.append("file", $("#imageFile")[0].files[0]);
+
+        $.ajax({
+            type: "POST",
+            cache: false,
+            contentType: false,
+            processData: false,
+            url: page.urls.doSave,
+            data: formData
+        })
+            .done(function (data) {
+                console.log("du lieu tra ve done")
+                product = data;
+                addRow();
+                App.SweetAlert.showSuccessAlert("Create new a shoes successful!");
+                $("#createModal").modal("hide");
+                handleGroupModal();
+            })
+            .fail(function (jqXHR) {
+                console.log("du lieu tra ve fail")
+                if (!jqXHR.responseJSON) {
+                    App.IziToast.showErrorAlert(jqXHR.responseText);
+                } else {
+                    let str = ``;
+                    $.each(jqXHR.responseJSON, (key, value) => {
+                        str += `<label id=${key}Create-error class="error" for="${key}Create">${value}</label>`;
+                        $("#" + key + "Create").addClass("error");
+                    })
+
+                    $("#createModal .modal-alert-danger").removeClass("hide").addClass("show");
+                    $("#create-error").append(str)
+
+                }
+            })
+    }
+
+    function doUpdate() {
+
+        product.name = $('#nameUp').val();
+        product.title = $('#titleUp').val();
+        product.price = $('#priceUp').val();
+        product.material = $('#materialUp').val();
+        product.quantity = $('#quantityUp').val();
+        product.description = $('#descriptionUp').val();
+
+        $.ajax({
+            type: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            },
+            url: page.urls.getAllProducts + "/" + product.id,
+            data: JSON.stringify(product)
+
+        }).done((data) => {
+            product = data;
+
+            let currentRow = $("#tr_" + product.id);
+
+            let image_thumbnail = App.BASE_URL_CLOUD_IMAGE + "/" + App.BASE_SCALE_IMAGE + "/" + product.fileFolder + "/" + product.fileName;
+            let imageFileUrl = App.BASE_URL_CLOUD_IMAGE + "/" + product.fileFolder + "/" + product.fileName;
+            let aClass = "image-popup-vertical-fit";
+
+            let updateRow = $(tempProduct(product.id, product.name, product.title, product.material, product.price,
+                product.quantity, product.nameCategory, product.size, product.color, product.description, imageFileUrl, image_thumbnail, aClass));
+
+
+            currentRow.replaceWith(updateRow);
+
+            App.SweetAlert.showSuccessAlert("Update successful");
+            $("#updateModal").modal("hide");
+
+            handleGroupModal();
+        })
+            .fail(function (jqXHR) {
+                if (!jqXHR.responseJSON) {
+                    App.IziToast.showErrorAlert(jqXHR.responseText);
+                } else {
+                    let str = ``;
+                    $.each(jqXHR.responseJSON, (key, value) => {
+                        str += `<label id=${key}Up-error class="error" for="${key}Up">${value}</label>`;
+                        $("#" + key + "Up").addClass("error");
+                    })
+
+                    $("#updateModal .modal-alert-danger").removeClass("hide").addClass("show");
+                    $("#modalUp-error").append(str)
+
+                }
+            })
+    }
+
+    function doSuspension(id) {
+        return $.ajax({
+            type: "DELETE",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            url: "http://localhost:8080/api/products/delete/" + id,
+        }).done(function (jqXHR) {
+            App.IziToast.showErrorAlert(jqXHR.responseText);
+        }).fail(function (jqXHR) {
+            App.IziToast.showErrorAlert(jqXHR.responseText);
+        });
+    }
+
+    function doSearch() {
+        $.ajax({
+            type: "GET",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            url: "http://localhost:8080/api/products/search",
+        })
+            .done(function (data) {
+                data.forEach(item => {
+                    product = item;
+                    addRow();
+                })
+            })
+            .fail(function (jqXHR) {
+                App.IziToast.showErrorAlert(jqXHR.responseText);
+            })
+    }
+
+
+    function resetModal(formElement) {
+        $(formElement)[0].reset();
+        $(formElement).validate().resetForm();
+        $(formElement + ' input.error').removeClass("error");
+    }
+
+    function closeModal(modal, formElement) {
+        $(modal).on("hidden.bs.modal", function () {
+            $(modal + ' .modal-alert-danger').empty().removeClass('show').addClass('hide');
+            resetModal(formElement);
+        });
+    }
+
+    closeModal("#createModal", "#frmCreate");
+
+    closeModal("#updateModal", "#frmUpdate");
+
+    $("#frmCreate").validate({
+        rules: {
+            nameProductCreate: {
+                required: true,
+            },
+            priceCreate: {
+                required: true,
+                number: true,
+                min: 10000,
+                max: 5000000
+            },
+            descriptionCreate: {
+                required: true,
+                maxlength: 10000
+            },
+            imageFile: true
+        },
+        messages: {
+            nameProductCreate: {
+                required: "Product's name is not empty",
+            },
+            priceCreate: {
+                required: "Please typing the price",
+                number: "Please enter the correct format number",
+                min: $.validator.format("The minimum price of the product is {0}"),
+                max: $.validator.format("The maximum price of the product is {0}")
+            },
+            descriptionCreate: {
+                required: "Description of the product is not empty",
+                maxlength: "Description exceeds the specified number of characters"
+            },
+            imageFile: "Please choose file for the product"
+        },
+        errorLabelContainer: "#createModal .modal-alert-danger",
+        errorPlacement: function (error, element) {
+            error.appendTo("#createModal .modal-alert-danger");
+        },
+        showErrors: function (errorMap, errorList) {
+            if (this.numberOfInvalids() > 0) {
+                $("#createModal .modal-alert-danger").removeClass("hide").addClass("show");
+            } else {
+                $("#createModal .modal-alert-danger").removeClass("show").addClass("hide").empty();
+                $("#frmCreate input.error").removeClass("error");
+            }
+            this.defaultShowErrors();
+        },
+        submitHandler: function () {
+            doCreate()
+        }
+    });
+
+    $("#frmUpdate").validate({
+        rules: {
+            nameProductUp: {
+                required: true,
+            },
+            priceUp: {
+                required: true,
+                number: true,
+                min: 10000,
+                max: 5000000
+            },
+            descriptionUp: {
+                required: true,
+                maxlength: 10000
+            },
+        },
+        messages: {
+            nameProductUp: {
+                required: "Product's name is not empty",
+
+            },
+            priceUp: {
+                required: "Please typing the price",
+                number: "Please enter the correct format number",
+                min: $.validator.format("The minimum price of the product is {0}"),
+                max: $.validator.format("The maximum price of the product is {0}")
+            },
+            descriptionUp: {
+                required: "Description of the product is not empty",
+                maxlength: "Description exceeds the specified number of characters"
+            }
+        },
+        errorLabelContainer: "#updateModal .modal-alert-danger",
+        errorPlacement: function (error, element) {
+            error.appendTo("#updateModal .modal-alert-danger");
+        },
+        showErrors: function (errorMap, errorList) {
+            if (this.numberOfInvalids() > 0) {
+                $("#updateModal .modal-alert-danger").removeClass("hide").addClass("show");
+            } else {
+                $("#updateModal .modal-alert-danger").removeClass("show").addClass("hide").empty();
+                $("#frmUpdate input.error").removeClass("error");
+            }
+            this.defaultShowErrors();
+        },
+        submitHandler: function () {
+            doUpdate()
+        }
+    });
+
+    $("#btnCreate").on("click", function () {
+        $("#frmCreate").submit();
+    })
+
+    $("#btnUpdate").on("click", function () {
+        if (tampId != product.id) {
+            App.SweetAlert.showErrorAlert("This drinks is not drinks need update!!")
+        } else {
+            $("#frmUpdate").submit();
+        }
+    })
+
+    $("#btnSearch").on("click", function () {
+        doSearch()
+    })
+
+    loadProduct().then(function () {
+        handleGroupModal();
+    })
+
+</script>
+</body>
+</html>

@@ -1,0 +1,69 @@
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<th:block th:fragment="modal-update">
+    <div class="modal fade" id="updateModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Updating Product</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="modal-alert-danger hide" id="modalUp-error">
+                    </div>
+                    <form id="frmUpdate" enctype="multipart/form-data">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="nameUp" class="form-label">Name Product</label>
+                                <input type="text" class="form-control" id="nameUp" name="nameUp">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="titleUp" class="form-label">Title</label>
+                                <input type="text" class="form-control" id="titleUp"
+                                       name="titleUp">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="priceUp" class="form-label">Price</label>
+                                <input type="number" class="form-control" id="priceUp" name="priceUp">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="quantityUp" class="form-label">Quantity:</label>
+                                <input type="number" class="form-control" id="quantityUp" name="quantityUp">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="materialUp" class="form-label">Material:</label>
+                                <input type="text" class="form-control" id="materialUp" name="materialUp">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="descriptionUp" class="form-label">Description:</label>
+                                <textarea type="tel" class="form-control" id="descriptionUp"
+                                          name="descriptionUp"></textarea>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <section>
+                                    <div class="wrapper">
+                                        <div class="file-name">
+                                            <label>Choose a new image for the product if you want to change:</label> <br/>
+                                            <input type="file" id="imageFile" name="imageFile"
+                                                   accept="image/jpeg, image/png"/>
+                                        </div>
+                                    </div>
+                                </section>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" id="btnUpdate" class="btn btn-outline-warning">Update</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</th:block>

@@ -1,0 +1,107 @@
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<th:block th:fragment="modal-create">
+    <div class="modal fade" id="createModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Creating New Product</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="modal-alert-danger hide" id="create-error">
+
+                    </div>
+                    <form id="frmCreate" enctype="multipart/form-data">
+                        <div class="row mt-3">
+                            <div class="col-md-4 mb-3">
+                                <label for="name" class="form-label">Name Product</label>
+                                <input type="text" class="form-control" id="name" name="name">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="title" class="form-label">Title</label>
+                                <input type="text" class="form-control" id="title"
+                                       name="title">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="price" class="form-label">Price</label>
+                                <input type="number" class="form-control" id="price" name="priceCreate">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="quantity" class="form-label">Quantity:</label>
+                                <input type="number" class="form-control" id="quantity" name="quantity">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="material" class="form-label">Material:</label>
+                                <input type="text" class="form-control" id="material" name="material">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3 mb-3">
+                                <label class="col-sm-12 col-form-label">Categories:</label>
+                                <div class="col-sm-6">
+                                    <select class="form-select" id="categoryId" name="categoryId"></select>
+                                </div>
+
+                                <label class="col-sm-12 col-form-label">Colors:</label>
+                                <div class="col-sm-6">
+                                    <select class="form-select" id="colorId" name="colorId"></select>
+                                </div>
+
+                                <label class="col-sm-12 col-form-label">Sizes:</label>
+                                <div class="col-sm-6">
+                                    <select class="form-select" id="sizeId" name="sizeId"></select>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="" id="status">
+                                    <label class="form-check-label" for="status">
+                                        Hot
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="" id="hot">
+                                    <label class="form-check-label" for="hot">
+                                        Bestseller
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="" id="bestseller">
+                                    <label class="form-check-label" for="bestseller">
+                                        Status
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-6 ms-auto">
+                                <label for="description" class="form-label">Description:</label>
+                                <textarea type="tel" class="form-control" id="description"
+                                          name="description"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <section>
+                                    <div class="wrapper">
+                                        <div class="file-name">
+                                            <label>Choose an image for the product:</label> <br/>
+                                            <input type="file" id="imageFile" name="imageFile"
+                                                   accept="image/jpeg, image/png"/>
+                                        </div>
+                                    </div>
+                                </section>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" id="btnCreate" class="btn btn-outline-primary">Create</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</th:block>
